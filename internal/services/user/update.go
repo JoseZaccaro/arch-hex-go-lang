@@ -5,6 +5,6 @@ import (
 	"context"
 )
 
-func (s Service) Update(ctx context.Context, id string, params domain.UserUpdateParams) (*domain.User, error) {
+func (s Service) Update(ctx context.Context, id string, params domain.UserCreateParams) (*domain.User, error) {
 	return nil, nil
 }
