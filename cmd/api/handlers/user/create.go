@@ -57,7 +57,7 @@ func (h Handler) Login(c *gin.Context) {
 		return
 	}
 
-	user, err := h.UserService.Login(c, userParams.Email, userParams.Password)
+	user, err := h.UserService.Login(c, userParams.Email, userParams.PasswordHash)
 
 	if err != nil {
 		log.Println(err)

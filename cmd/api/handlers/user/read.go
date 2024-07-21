@@ -1,7 +1,20 @@
 package user
 
-import "github.com/gin-gonic/gin"
+import (
+	"fmt"
 
-func GetRoot(c *gin.Context) {
-	c.JSON(200, gin.H{"message": "Hello World"})
+	"github.com/gin-gonic/gin"
+)
+
+func (h Handler) GetRoot(c *gin.Context) {
+	users, _ := h.UserService.ReadAll(c)
+
+	for _, user := range users {
+		fmt.Println(user.RoleID)
+		if roleID, ok := user.RoleID.(string); ok {
+			user.RoleID = roleID
+		}
+	}
+
+	c.JSON(200, gin.H{"message": "Hello World", "users": users})
 }

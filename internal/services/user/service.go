@@ -9,6 +9,7 @@ import (
 
 type Service struct {
 	UserRepository repository.UserRepository
+	RoleRepository repository.RoleRepository
 }
 
 func NewService() service.UserService {

@@ -4,11 +4,12 @@ import "time"
 
 //? Entity
 type User struct {
-	Username     string    `json:"username" bson:"username"`
-	Email        string    `json:"email" bson:"email"`
-	PasswordHash string    `json:"-" bson:"password_hash"`
-	CreatedAt    time.Time `json:"created_at" bson:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at" bson:"updated_at"`
+	Username     string      `json:"username" bson:"username"`
+	Email        string      `json:"email" bson:"email"`
+	PasswordHash string      `json:"-" bson:"password_hash"`
+	RoleID       interface{} `json:"role_id" bson:"role_id"`
+	CreatedAt    time.Time   `json:"created_at" bson:"created_at"`
+	UpdatedAt    time.Time   `json:"updated_at" bson:"updated_at"`
 }
 
 //? Mongo DTO
@@ -18,6 +19,7 @@ type UserMongo struct {
 	Username     string      `json:"username" bson:"username"`
 	Email        string      `json:"email" bson:"email"`
 	PasswordHash string      `json:"-" bson:"password_hash"`
+	RoleID       interface{} `json:"role_id" bson:"role_id"`
 	CreatedAt    time.Time   `json:"created_at" bson:"created_at"`
 	UpdatedAt    time.Time   `json:"updated_at" bson:"updated_at"`
 }
@@ -29,7 +31,8 @@ type UserLogin struct {
 }
 
 type UserCreateParams struct {
-	Username string `json:"username" bson:"username"`
-	Email    string `json:"email" bson:"email"`
-	Password string `json:"password" bson:"password_hash"`
+	Username     string `json:"username" bson:"username"`
+	Email        string `json:"email" bson:"email"`
+	PasswordHash string `json:"password" bson:"password_hash"`
+	RoleID       string `json:"role_id" bson:"role_id"`
 }

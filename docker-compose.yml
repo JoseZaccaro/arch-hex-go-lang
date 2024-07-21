@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: mongo:latest
+    ports:
+    - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 
+      MONGO_INITDB_ROOT_PASSWORD: 
+
+    volumes:
+      - mongo-data:/data/db
+    restart: always
+    networks:
+      - default
+
+  app:
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - "8001:8001"
+    env_file: cmd/api/.env
+    depends_on:
+      - mongo
+    restart: always
+    networks:
+      - default
+
+volumes:
+  mongo-data:
+    driver: local
+
+networks:
+  default:
