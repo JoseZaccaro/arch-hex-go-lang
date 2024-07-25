@@ -1,11 +1,10 @@
 package main
 
 import (
-	"api/autentiacion/cmd/api/handlers/user"
-	"api/autentiacion/cmd/api/middleware"
 	"api/autentiacion/internal/repositories/mongo"
-	roleRepo "api/autentiacion/internal/repositories/mongo/role"
-	repo "api/autentiacion/internal/repositories/mongo/user"
+	repoRoleMongo "api/autentiacion/internal/repositories/mongo/role"
+	"api/autentiacion/internal/repositories/mysql"
+	repoUserMySql "api/autentiacion/internal/repositories/mysql/user"
 	"api/autentiacion/internal/services/auth"
 	userSrv "api/autentiacion/internal/services/user"
 	"log"
@@ -29,18 +28,33 @@ func main() {
 		log.Fatal(err)
 	}
 
+	host := os.Getenv("MYSQL_HOST")
+	port := os.Getenv("MYSQL_PORT")
+	user := os.Getenv("MYSQL_USER")
+	password := os.Getenv("MYSQL_PASSWORD")
+
+	// Conectar a MySql
+	dsn := user + ":" + password + "@tcp(" + host + ":" + port + ")" + "/autenticacion" + "?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := mysql.Connect(dsn)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// var userRepository user.UserRepository =
-	roleRepository := roleRepo.RoleRepository{
+	roleRepository := repoRoleMongo.RoleRepository{
 		Client:     cliente,
 		Collection: cliente.Database(os.Getenv("MONGO_DATABASE")).Collection("roles"),
 	}
-	userRepository := repo.UserRepository{
-		Client:     cliente,
-		Collection: cliente.Database(os.Getenv("MONGO_DATABASE")).Collection("users"),
+	// userRepository := repoUserMongo.UserRepository{
+	// 	Client:     cliente,
+	// 	Collection: cliente.Database(os.Getenv("MONGO_DATABASE")).Collection("users"),
+	// }
+	userRepositorySql := repoUserMySql.UserRepository{
+		DB: db,
 	}
 
 	userService := userSrv.Service{
-		UserRepository: userRepository,
+		UserRepository: userRepositorySql,
 		RoleRepository: roleRepository,
 	}
 
@@ -53,7 +67,7 @@ func main() {
 	ginEngine.POST("/api/users/register", userHandler.Register)
 	// ginEngine.Use(middleware.Passport(userHandler))
 	ginEngine.GET("/", userHandler.GetRoot)
-	ginEngine.POST("/api/users/create", middleware.Passport(userHandler), userHandler.Create)
+	ginEngine.POST("/api/users/create", userHandler.Create)
 	ginEngine.POST("/api/users/login", userHandler.Login)
 	ginEngine.PUT("/api/users/:id", userHandler.UpdateUser)
 

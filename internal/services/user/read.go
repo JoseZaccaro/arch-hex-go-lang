@@ -5,11 +5,11 @@ import (
 	"context"
 )
 
-func (s Service) Read(ctx context.Context, id string) (*domain.UserMongo, error) {
+func (s Service) Read(ctx context.Context, id string) (*domain.UserDB, error) {
 	return nil, nil
 }
 
-func (s Service) ReadAll(ctx context.Context) ([]*domain.UserMongo, error) {
+func (s Service) ReadAll(ctx context.Context) ([]*domain.UserDB, error) {
 
 	users, _ := s.UserRepository.FindAllUsers()
 

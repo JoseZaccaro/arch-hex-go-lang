@@ -38,7 +38,7 @@ func (s Service) Create(ctx context.Context, params domain.UserCreateParams) (id
 	return id, nil
 }
 
-func (s Service) Register(ctx context.Context, params domain.UserCreateParams) (*domain.UserMongo, error) {
+func (s Service) Register(ctx context.Context, params domain.UserCreateParams) (*domain.UserDB, error) {
 	now := time.Now().UTC()
 	exists, err := s.UserRepository.ExistsByEmail(params.Email)
 	if err != nil {
@@ -64,7 +64,7 @@ func (s Service) Register(ctx context.Context, params domain.UserCreateParams) (
 		return nil, err
 	}
 
-	newUser := &domain.UserMongo{
+	newUser := &domain.UserDB{
 		ID:           id,
 		Username:     params.Username,
 		Email:        params.Email,

@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func (r UserRepository) FindUserByUsername(username string) (*domain.UserMongo, error) {
+func (r UserRepository) FindUserByUsername(username string) (*domain.UserDB, error) {
 	var result bson.M
 
 	// TODO: find user by username
@@ -25,7 +25,7 @@ func (r UserRepository) FindUserByUsername(username string) (*domain.UserMongo, 
 		return nil, err
 	}
 
-	user := &domain.UserMongo{
+	user := &domain.UserDB{
 		ID:           result["_id"].(primitive.ObjectID),
 		Username:     result["username"].(string),
 		RoleID:       result["role_id"].(primitive.ObjectID),
@@ -36,7 +36,7 @@ func (r UserRepository) FindUserByUsername(username string) (*domain.UserMongo, 
 	}
 	return user, nil
 }
-func (r UserRepository) FindUserByEmail(email string) (*domain.UserMongo, error) {
+func (r UserRepository) FindUserByEmail(email string) (*domain.UserDB, error) {
 	var result bson.M
 
 	// TODO: find user by email
@@ -50,7 +50,7 @@ func (r UserRepository) FindUserByEmail(email string) (*domain.UserMongo, error)
 		return nil, err
 	}
 
-	user := &domain.UserMongo{
+	user := &domain.UserDB{
 		ID:           result["_id"].(primitive.ObjectID),
 		Username:     result["username"].(string),
 		Email:        result["email"].(string),
@@ -105,7 +105,7 @@ func (r UserRepository) ExistsById(id string) (bool, error) {
 	}
 	return true, nil
 }
-func (r UserRepository) FindUserById(id string) (*domain.UserMongo, error) {
+func (r UserRepository) FindUserById(id string) (*domain.UserDB, error) {
 	var userResult bson.M
 	objId, _ := primitive.ObjectIDFromHex(id)
 
@@ -117,7 +117,7 @@ func (r UserRepository) FindUserById(id string) (*domain.UserMongo, error) {
 		return nil, err
 	}
 
-	user := &domain.UserMongo{
+	user := &domain.UserDB{
 		ID:           userResult["_id"].(primitive.ObjectID),
 		Username:     userResult["username"].(string),
 		Email:        userResult["email"].(string),
@@ -130,8 +130,8 @@ func (r UserRepository) FindUserById(id string) (*domain.UserMongo, error) {
 	return user, nil
 }
 
-func (r UserRepository) FindAllUsers() ([]*domain.UserMongo, error) {
-	var users []*domain.UserMongo
+func (r UserRepository) FindAllUsers() ([]*domain.UserDB, error) {
+	var users []*domain.UserDB
 	cursor, err := r.Collection.Find(context.Background(), bson.D{})
 	if err != nil {
 		return nil, err
@@ -141,7 +141,7 @@ func (r UserRepository) FindAllUsers() ([]*domain.UserMongo, error) {
 		if err := cursor.Decode(&user); err != nil {
 			return nil, err
 		}
-		users = append(users, &domain.UserMongo{
+		users = append(users, &domain.UserDB{
 			ID:           user["_id"].(primitive.ObjectID),
 			Username:     user["username"].(string),
 			RoleID:       user["role_id"].(primitive.ObjectID),

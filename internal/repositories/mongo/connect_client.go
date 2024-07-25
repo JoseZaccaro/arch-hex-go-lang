@@ -12,7 +12,7 @@ import (
 func ConnectClient(dbUrl string) (client *mongo.Client, err error) {
 
 	// TODO: connect to mongo
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	clientOptions := options.Client().ApplyURI(dbUrl)

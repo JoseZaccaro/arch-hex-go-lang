@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (r UserRepository) UpdateByID(id string, params *domain.UserMongo) (interface{}, error) {
+func (r UserRepository) UpdateByID(id string, params *domain.UserDB) (interface{}, error) {
 	if params == nil {
 		return nil, fmt.Errorf("user create params is nil")
 	}

@@ -15,7 +15,7 @@ func (s Service) Update(ctx context.Context, id string, params domain.UserCreate
 		return nil, fmt.Errorf("invalid role")
 	}
 
-	update := domain.UserMongo{
+	update := domain.UserDB{
 		Username:     params.Username,
 		Email:        params.Email,
 		PasswordHash: params.PasswordHash,
