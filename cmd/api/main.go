@@ -1,11 +1,12 @@
 package main
 
 import (
-	"api/autentiacion/internal/repositories/mongo"
+	UserHandler "api/autentiacion/cmd/api/handlers/user"
+	mongoPkg "api/autentiacion/internal/repositories/mongo"
 	repoRoleMongo "api/autentiacion/internal/repositories/mongo/role"
-	"api/autentiacion/internal/repositories/mysql"
+	mysqlPkg "api/autentiacion/internal/repositories/mysql"
 	repoUserMySql "api/autentiacion/internal/repositories/mysql/user"
-	"api/autentiacion/internal/services/auth"
+	authPkg "api/autentiacion/internal/services/auth"
 	userSrv "api/autentiacion/internal/services/user"
 	"log"
 	"os"
@@ -23,19 +24,19 @@ func main() {
 	}
 
 	// Conectar a MongoDB
-	cliente, err := mongo.ConnectClient(os.Getenv("MONGO_URL"))
+	cliente, err := mongoPkg.ConnectClient(os.Getenv("MONGO_URL"))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	host := os.Getenv("MYSQL_HOST")
-	port := os.Getenv("MYSQL_PORT")
-	user := os.Getenv("MYSQL_USER")
-	password := os.Getenv("MYSQL_PASSWORD")
+	mysql_host := os.Getenv("MYSQL_HOST")
+	mysql_port := os.Getenv("MYSQL_PORT")
+	mysql_user := os.Getenv("MYSQL_USER")
+	mysql_password := os.Getenv("MYSQL_PASSWORD")
 
 	// Conectar a MySql
-	dsn := user + ":" + password + "@tcp(" + host + ":" + port + ")" + "/autenticacion" + "?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := mysql.Connect(dsn)
+	dsn := mysql_user + ":" + mysql_password + "@tcp(" + mysql_host + ":" + mysql_port + ")" + "/autenticacion" + "?charset=utf8mb4&parseTime=True&loc=Local"
+	db, err := mysqlPkg.Connect(dsn)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -58,9 +59,9 @@ func main() {
 		RoleRepository: roleRepository,
 	}
 
-	userHandler := user.Handler{
+	userHandler := UserHandler.Handler{
 		UserService: userService,
-		JwtService:  *auth.NewJwtSecret(),
+		JwtService:  *authPkg.NewJwtSecret(),
 	}
 
 	ginEngine := gin.Default()
