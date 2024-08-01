@@ -3,6 +3,7 @@ package auth
 import (
 	"api/autentiacion/internal/domain"
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -54,9 +55,22 @@ func (j AuthService) ParseToken(token *jwt.Token) (*domain.UserLogin, error) {
 	if !ok || !token.Valid {
 		return nil, fmt.Errorf("invalid token")
 	}
+	idType := reflect.TypeOf(claims["sub"])
+	var id string
+
+	switch idType.Kind() {
+	case reflect.String:
+		id = claims["sub"].(string)
+	case reflect.Int64:
+		id = fmt.Sprintf("%v", claims["sub"])
+	case reflect.Float64:
+		id = fmt.Sprintf("%v", claims["sub"])
+	default:
+		return nil, fmt.Errorf("invalid token")
+	}
 
 	user := domain.UserLogin{
-		ID:       claims["sub"].(string),
+		ID:       id,
 		Username: claims["username"].(string),
 		Email:    claims["email"].(string),
 	}

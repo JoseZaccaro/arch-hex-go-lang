@@ -36,3 +36,38 @@ func (r RoleRepository) FindByName(name string) (*domain.Role, error) {
 
 	return &result, nil
 }
+
+func (r RoleRepository) FindByID(id interface{}) (*domain.Role, error) {
+	objectID, err := primitive.ObjectIDFromHex(id.(string))
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.M{"_id": objectID}
+	var result domain.Role
+
+	err = r.Collection.FindOne(context.Background(), filter).Decode(&result)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
+
+}
+
+func (r RoleRepository) FindAllRoles() ([]*domain.Role, error) {
+	var result []*domain.Role
+	cursor, err := r.Collection.Find(context.Background(), bson.D{})
+	if err != nil {
+		return nil, err
+	}
+	for cursor.Next(context.Background()) {
+		var role domain.Role
+		err := cursor.Decode(&role)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, &role)
+	}
+	return result, nil
+}

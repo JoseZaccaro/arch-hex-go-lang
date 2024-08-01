@@ -6,7 +6,9 @@ import (
 )
 
 func (s Service) ReadAll(ctx context.Context) ([]*domain.Role, error) {
-	return nil, nil
+	roles, _ := s.RoleRepository.FindAllRoles()
+
+	return roles, nil
 }
 func (s Service) FindByName(ctx context.Context, name string) (*domain.Role, error) {
 	return nil, nil

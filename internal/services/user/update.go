@@ -10,7 +10,7 @@ func (s Service) Update(ctx context.Context, id string, params domain.UserCreate
 	if exists, _ := s.UserRepository.ExistsById(id); !exists {
 		return nil, fmt.Errorf("invalid id")
 	}
-	role, errRole := s.RoleRepository.FindByName(params.RoleID)
+	role, errRole := s.RoleRepository.FindByName(params.RoleID.(string))
 	if role == nil || errRole != nil {
 		return nil, fmt.Errorf("invalid role")
 	}

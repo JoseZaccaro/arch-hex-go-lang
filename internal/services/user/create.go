@@ -5,6 +5,7 @@ import (
 	"api/autentiacion/internal/utils"
 	"context"
 	"fmt"
+	"log"
 
 	"time"
 
@@ -16,13 +17,17 @@ func (s Service) Create(ctx context.Context, params domain.UserCreateParams) (id
 	hashedPassword, _ := utils.HashPassword(params.PasswordHash)
 
 	if params.RoleID == "" {
-		params.RoleID = "demo"
+		role, errRole := s.RoleRepository.FindByName(params.RoleID.(string))
+		if role == nil || errRole != nil {
+			return nil, fmt.Errorf("invalid role")
+		}
+		params.RoleID = role.ID
 	}
 
 	user := &domain.User{
 		Username:     params.Username,
 		Email:        params.Email,
-		PasswordHash: string(hashedPassword),
+		PasswordHash: hashedPassword,
 		RoleID:       params.RoleID,
 		CreatedAt:    now,
 		UpdatedAt:    now,
@@ -49,13 +54,18 @@ func (s Service) Register(ctx context.Context, params domain.UserCreateParams) (
 	}
 
 	hashedPassword, _ := utils.HashPassword(params.PasswordHash)
-	role, _ := s.RoleRepository.FindByName("user")
+	role, errRole := s.RoleRepository.FindByName("user")
+
+	if role == nil || errRole != nil {
+		return nil, fmt.Errorf("invalid role")
+	}
+	params.RoleID = role.ID
 
 	id, errInsrt := s.UserRepository.Insert(&domain.User{
 		Username:     params.Username,
 		Email:        params.Email,
-		PasswordHash: string(hashedPassword),
-		RoleID:       role.ID,
+		PasswordHash: hashedPassword,
+		RoleID:       params.RoleID,
 		CreatedAt:    now,
 		UpdatedAt:    now,
 	})
@@ -80,14 +90,16 @@ func (s Service) Register(ctx context.Context, params domain.UserCreateParams) (
 func (s Service) Login(ctx context.Context, email string, password string) (*domain.UserLogin, error) {
 	exists, err := s.UserRepository.ExistsByEmail(email)
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	if !exists {
+
 		return nil, fmt.Errorf("email or password incorrect")
 	}
 
 	user, err := s.UserRepository.FindUserByEmail(email)
-	if err != nil {
+	if err != nil || user == nil {
 		return nil, err
 	}
 

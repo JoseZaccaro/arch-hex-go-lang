@@ -14,7 +14,7 @@ func (r RoleRepository) Insert(role *domain.CreateRole) (id interface{}, err err
 
 	if err2 != nil {
 		log.Println(err2.Error())
-		return nil, fmt.Errorf("failed to insert user: %v", err2)
+		return nil, fmt.Errorf("failed to insert role: %v", err2)
 	}
 
 	return insertResult.InsertedID, nil
